@@ -4,7 +4,7 @@ import math
 import random
 import os
 import time
-
+import pygame
 
 global timepause 
 timepause = 10
@@ -35,6 +35,13 @@ class world(object):
 		self.scale = scale
 		self.worldmap = [[]]
 		self.creatworld
+		pygame.init()
+		self.py = 5
+		self.px = 5
+		self.xlen = 400/self.scale
+		self.ylen = 400/self.scale
+
+		self.screen = pygame.display.set_mode([2*self.px+self.scale*self.xlen,2*self.py+self.scale*self.ylen])
 
 	def creatworld(self):
 		worldmap = []
@@ -68,9 +75,9 @@ class world(object):
 		for i in range(self.scale):
 			for j in range(self.scale):
 				neighbourstate = self.outlook(i,j)
-				if (neighbourstate == 4 ):
+				if (neighbourstate == 3 ):
 					self.worldmap[i][j].nextstate = 1
-				elif(neighbourstate == 2 or neighbourstate==3):
+				elif(neighbourstate == 2 ):
 					self.worldmap[i][j].nextstate = self.worldmap[i][j].nowstate
 				else:
 					self.worldmap[i][j].nextstate = 0
@@ -82,20 +89,50 @@ class world(object):
 
 
 	def display(self):
-		for i in range(self.scale):
-			for j in range(self.scale):
-				print self.worldmap[i][j].nowstate,
-			print ""
+		
+		for i in range(20):
+			self.drawupdateworld()
+			self.updateworld()
+			self.evolution()
+			time.sleep(1)
+		
 
 	def displaycell(self,x,y):
-		for i in range(100):
-			print self.worldmap[x][y].nowstate , self.worldmap[x][y].nextstate
+		for i in range(10):
+			print self.worldmap[x][y].nowstate, self.worldmap[x][y].nextstate
 			self.updateworld()
 			self.evolution()
 			time.sleep(0.3)
+		pygame.exit()
+
+	def drawupdateworld(self):
+
+		white = (255,255,255)
+		black = (0,0,0)
+
+		for i in range(self.scale):
+			for j in range(self.scale):
+				if self.worldmap[i][j].nowstate == 1:
+					pygame.draw.rect(self.screen,white,[i*self.xlen+self.px,j*self.ylen+self.py,self.xlen,self.ylen])
+				if self.worldmap[i][j].nowstate == 0:
+					pygame.draw.rect(self.screen,black,[i*self.xlen+self.px,j*self.ylen+self.py,self.xlen,self.ylen])
+
+		pygame.display.update()
+		
 
 
-oneworld = world()
+# pygame.init()
+# screen = pygame.display.set_mode([sizey,sizex])
+# pygame.draw.rect(screen,white,[px,py,xlen,ylen])
+# pygame.draw.rect(screen,white,[px+40,py+40,xlen,ylen])
+
+# for i in range(30):
+# 	pygame.display.update([px,py,xlen+100,ylen+100])
+# 	time.sleep(1)
+
+
+oneworld = world(30)
 oneworld.creatworld()
-oneworld.displaycell(30,30)
+oneworld.display()
+
 
